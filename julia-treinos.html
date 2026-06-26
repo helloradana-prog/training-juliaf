@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Júlia Fernandes · Treinos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF8F4;
+    --offwhite: #F5F2EC;
+    --yellow: #F5D98B;
+    --yellow-deep: #E8C55A;
+    --pink: #F2BDCC;
+    --pink-deep: #E8A0B8;
+    --rose: #D4637A;
+    --charcoal: #2C2C2C;
+    --gray: #6B6B6B;
+    --light-gray: #C8C4BC;
+    --border: #E8E3D8;
+    --card: #FFFFFF;
+    --shadow: 0 2px 16px rgba(44,44,44,0.07);
+    --radius: 18px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    min-height: 100vh;
+    padding-bottom: 90px;
+    font-size: 15px;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--card);
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .header-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    letter-spacing: -0.3px;
+    color: var(--charcoal);
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 1px;
+    font-weight: 400;
+  }
+  .header-badge {
+    background: var(--yellow);
+    color: var(--charcoal);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 200;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 12px 4px 10px;
+    cursor: pointer;
+    background: none; border: none;
+    color: var(--light-gray);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    gap: 4px;
+    transition: color 0.2s;
+  }
+  .nav-item.active { color: var(--rose); }
+  .nav-icon { font-size: 20px; line-height: 1; }
+
+  /* ── PAGES ── */
+  .page { display: none; padding: 20px; }
+  .page.active { display: block; }
+
+  /* ── SECTION TITLE ── */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 14px;
+  }
+
+  /* ── WEEK SELECTOR ── */
+  .week-selector-wrap {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .week-selector-row {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .week-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--charcoal);
+  }
+  .week-sublabel { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .week-arrows { display: flex; gap: 8px; }
+  .week-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--offwhite); border: 1px solid var(--border);
+    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--charcoal);
+  }
+  .week-btn:active { background: var(--yellow); }
+  .progress-bar-wrap { margin-top: 14px; }
+  .progress-bar-bg {
+    height: 6px; background: var(--offwhite);
+    border-radius: 3px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--pink-deep), var(--yellow-deep));
+    border-radius: 3px; transition: width 0.5s ease;
+  }
+  .progress-text { font-size: 11px; color: var(--gray); margin-top: 6px; }
+
+  /* ── TRAINING TABS ── */
+  .train-tabs {
+    display: flex; gap: 8px; margin-bottom: 18px; overflow-x: auto;
+    padding-bottom: 4px; scrollbar-width: none;
+  }
+  .train-tabs::-webkit-scrollbar { display: none; }
+  .train-tab {
+    flex-shrink: 0;
+    padding: 9px 18px;
+    border-radius: 30px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .train-tab.active {
+    background: var(--rose);
+    border-color: var(--rose);
+    color: #fff;
+  }
+
+  /* ── EXERCISE CARD ── */
+  .exercise-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 0;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .ex-header {
+    display: flex; align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+    gap: 12px;
+  }
+  .ex-check {
+    width: 26px; height: 26px; border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--offwhite);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+  }
+  .ex-check.done {
+    background: var(--yellow);
+    border-color: var(--yellow-deep);
+    color: var(--charcoal);
+  }
+  .ex-info { flex: 1; }
+  .ex-name { font-size: 14px; font-weight: 600; color: var(--charcoal); }
+  .ex-meta { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .ex-rpe {
+    font-size: 11px; font-weight: 600;
+    padding: 3px 9px; border-radius: 20px;
+    background: var(--pink);
+    color: var(--rose);
+    flex-shrink: 0;
+  }
+  .ex-expand-icon {
+    font-size: 12px; color: var(--light-gray);
+    transition: transform 0.2s;
+  }
+  .ex-expand-icon.open { transform: rotate(180deg); }
+
+  /* ── EXERCISE DETAILS ── */
+  .ex-details {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 14px 16px;
+    background: var(--offwhite);
+  }
+  .ex-details.open { display: block; }
+  .ex-details-row { display: flex; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .detail-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--charcoal);
+    flex: 1; min-width: 90px;
+  }
+  .detail-chip-label { color: var(--gray); font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 3px; }
+  .detail-chip-val { font-weight: 600; font-size: 14px; }
+
+  /* Load Input */
+  .load-section { margin-top: 6px; }
+  .load-label { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; font-weight: 600; }
+  .load-row { display: flex; gap: 8px; align-items: center; }
+  .load-input {
+    flex: 1; padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--card); color: var(--charcoal);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .load-input:focus { border-color: var(--rose); }
+  .load-unit {
+    font-size: 12px; color: var(--gray); font-weight: 500; min-width: 24px;
+  }
+  .prev-load { font-size: 11px; color: var(--gray); margin-top: 6px; }
+  .prev-load span { color: var(--rose); font-weight: 600; }
+
+  /* Execution tip */
+  .ex-tip {
+    margin-top: 12px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, #FFF6E0, #FFF0F4);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--yellow-deep);
+    font-size: 12px;
+    color: var(--charcoal);
+    line-height: 1.5;
+  }
+  .ex-tip-title { font-weight: 700; margin-bottom: 3px; font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; }
+
+  /* ── CARDIO CARD ── */
+  .cardio-card {
+    background: linear-gradient(135deg, var(--yellow), var(--pink));
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-top: 6px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .cardio-icon { font-size: 28px; }
+  .cardio-title { font-weight: 700; font-size: 15px; color: var(--charcoal); }
+  .cardio-desc { font-size: 12px; color: var(--charcoal); opacity: 0.75; margin-top: 2px; }
+
+  /* ── SAVE BTN ── */
+  .save-btn {
+    width: 100%; padding: 16px;
+    background: var(--rose);
+    color: #fff;
+    border: none; border-radius: var(--radius);
+    font-size: 15px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+    letter-spacing: 0.2px;
+  }
+  .save-btn:active { opacity: 0.85; }
+
+  /* ── GUIDE PAGE ── */
+  .guide-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .guide-header {
+    padding: 14px 16px;
+    display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .guide-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+  .guide-name { font-size: 14px; font-weight: 600; }
+  .guide-target { font-size: 12px; color: var(--gray); margin-top: 1px; }
+  .guide-body {
+    display: none;
+    padding: 14px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--offwhite);
+  }
+  .guide-body.open { display: block; }
+  .guide-row { margin-bottom: 10px; }
+  .guide-row-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--gray); font-weight: 600; margin-bottom: 3px; }
+  .guide-row-text { font-size: 13px; color: var(--charcoal); line-height: 1.5; }
+  .guide-row-text.error { color: var(--rose); }
+  .guide-row-text.tip { color: #5A7A3A; font-weight: 500; }
+
+  /* ── PROFILE PAGE ── */
+  .profile-hero {
+    background: linear-gradient(135deg, var(--pink), var(--yellow));
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .profile-avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--card);
+    font-size: 28px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+    font-family: 'DM Serif Display', serif;
+    color: var(--rose);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .profile-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; color: var(--charcoal);
+  }
+  .profile-age { font-size: 13px; color: var(--charcoal); opacity: 0.65; margin-top: 4px; }
+  .profile-tags { display: flex; gap: 6px; justify-content: center; margin-top: 12px; flex-wrap: wrap; }
+  .profile-tag {
+    background: rgba(255,255,255,0.7);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 11px; font-weight: 600; color: var(--charcoal);
+  }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .stat-card {
+    background: var(--card);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .stat-val { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--charcoal); }
+  .stat-label { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+  /* ── HISTORY PAGE ── */
+  .history-week-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .hwc-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+  }
+  .hwc-week { font-weight: 700; font-size: 14px; }
+  .hwc-date { font-size: 11px; color: var(--gray); }
+  .hwc-dots { display: flex; gap: 4px; }
+  .hwc-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border);
+  }
+  .hwc-dot.done { background: var(--yellow-deep); }
+  .hwc-dot.skip { background: var(--pink-deep); }
+  .hwc-body { display: none; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--offwhite); }
+  .hwc-body.open { display: block; }
+
+  .week-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .wf-item { display: flex; flex-direction: column; gap: 4px; }
+  .wf-label { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .wf-select, .wf-input-text {
+    padding: 8px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--card); color: var(--charcoal);
+    outline: none;
+    width: 100%;
+  }
+  .wf-select:focus, .wf-input-text:focus { border-color: var(--rose); }
+  .wf-notes { grid-column: 1 / -1; }
+  .wf-notes textarea {
+    padding: 8px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--card); color: var(--charcoal);
+    outline: none;
+    width: 100%; resize: none; height: 68px;
+  }
+  .save-week-btn {
+    width: 100%; padding: 11px;
+    background: var(--charcoal);
+    color: #fff; border: none;
+    border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; margin-top: 10px;
+  }
+
+  /* ── RPE GUIDE ── */
+  .rpe-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+  .rpe-item {
+    background: var(--card);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    box-shadow: var(--shadow);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .rpe-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; color: var(--rose); line-height: 1;
+    flex-shrink: 0;
+  }
+  .rpe-desc { font-size: 12px; color: var(--gray); line-height: 1.4; margin-top: 1px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+    background: var(--charcoal); color: #fff;
+    padding: 12px 22px; border-radius: 30px;
+    font-size: 13px; font-weight: 500;
+    z-index: 1000;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  /* ── UTILS ── */
+  .mb-20 { margin-bottom: 20px; }
+  .mt-8 { margin-top: 8px; }
+  .divider { height: 1px; background: var(--border); margin: 18px 0; }
+
+  /* intensity bar */
+  .intensity-row { display: flex; gap: 3px; margin-top: 8px; }
+  .intensity-pip {
+    height: 4px; border-radius: 2px; flex: 1;
+    background: var(--border);
+  }
+  .intensity-pip.lit { background: var(--yellow-deep); }
+  .intensity-pip.lit.high { background: var(--rose); }
+
+  .obs-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 12px;
+  }
+  .obs-title { font-weight: 700; font-size: 13px; margin-bottom: 8px; color: var(--charcoal); }
+  .obs-text { font-size: 12px; color: var(--gray); line-height: 1.6; }
+
+  /* scroll snap for guide categories */
+  .guide-filter { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; scrollbar-width: none; }
+  .guide-filter::-webkit-scrollbar { display: none; }
+  .gf-chip {
+    flex-shrink: 0; padding: 7px 14px; border-radius: 20px;
+    border: 1.5px solid var(--border); background: var(--card);
+    font-size: 12px; font-weight: 500; color: var(--gray); cursor: pointer;
+  }
+  .gf-chip.active { background: var(--charcoal); border-color: var(--charcoal); color: #fff; }
+
+  .empty-history {
+    text-align: center; padding: 40px 20px; color: var(--gray); font-size: 13px;
+  }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+  /* ── AVALIAÇÃO ── */
+  .aval-week-selector {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .aval-week-row {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .aval-week-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px; color: var(--charcoal);
+  }
+  .aval-saved-at {
+    font-size: 11px; color: var(--gray); margin-top: 6px; min-height: 14px;
+  }
+  .aval-grid {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .aval-field { }
+  .aval-full { }
+  .aval-field-label {
+    font-size: 11px; font-weight: 600; color: var(--gray);
+    text-transform: uppercase; letter-spacing: 0.9px;
+    margin-bottom: 8px;
+  }
+  .aval-options {
+    display: flex; flex-wrap: wrap; gap: 7px;
+  }
+  .aval-opt {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    font-size: 13px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .aval-opt.selected {
+    background: var(--yellow);
+    border-color: var(--yellow-deep);
+    font-weight: 700;
+  }
+  .aval-obs {
+    width: 100%; padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--card); color: var(--charcoal);
+    outline: none; resize: none; height: 76px;
+  }
+  .aval-obs:focus { border-color: var(--rose); }
+  .aval-fields {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div>
+    <div class="header-title">Júlia Fernandes</div>
+    <div class="header-sub">Força · Hipertrofia · Bem-estar</div>
+  </div>
+  <div class="header-badge" id="weekBadge">Semana 1</div>
+</header>
+
+<!-- PAGES -->
+<div class="page active" id="page-treino">
+  <div class="week-selector-wrap">
+    <div class="week-selector-row">
+      <div>
+        <div class="week-label" id="weekLabel">Semana 1</div>
+        <div class="week-sublabel" id="weekSub">Fase de base · Semana 1 de 20</div>
+      </div>
+      <div class="week-arrows">
+        <button class="week-btn" onclick="changeWeek(-1)">‹</button>
+        <button class="week-btn" onclick="changeWeek(1)">›</button>
+      </div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill" style="width:5%"></div>
+      </div>
+      <div class="progress-text" id="progressText">5% concluído</div>
+    </div>
+  </div>
+
+  <div class="train-tabs" id="trainTabs">
+    <button class="train-tab active" onclick="selectTab('A')">Treino A</button>
+    <button class="train-tab" onclick="selectTab('B')">Treino B</button>
+    <button class="train-tab" onclick="selectTab('C')">Treino C</button>
+    <button class="train-tab" onclick="selectTab('D')">Treino D</button>
+  </div>
+
+  <div id="trainContent"></div>
+</div>
+
+<div class="page" id="page-guia">
+  <div class="section-label">Guia de Execução</div>
+  <div class="guide-filter">
+    <button class="gf-chip active" onclick="filterGuide('all', this)">Todos</button>
+    <button class="gf-chip" onclick="filterGuide('A', this)">Treino A</button>
+    <button class="gf-chip" onclick="filterGuide('B', this)">Treino B</button>
+    <button class="gf-chip" onclick="filterGuide('C', this)">Treino C</button>
+    <button class="gf-chip" onclick="filterGuide('D', this)">Treino D</button>
+  </div>
+
+  <div class="section-label" style="margin-top:4px">Intensidade (RPE)</div>
+  <div class="rpe-grid mb-20">
+    <div class="rpe-item"><div class="rpe-num">6</div><div class="rpe-desc">Confortável, leve</div></div>
+    <div class="rpe-item"><div class="rpe-num">7</div><div class="rpe-desc">Moderadamente difícil</div></div>
+    <div class="rpe-item"><div class="rpe-num">8</div><div class="rpe-desc">Difícil, com margem</div></div>
+    <div class="rpe-item"><div class="rpe-num">9</div><div class="rpe-desc">Quase no limite</div></div>
+  </div>
+
+  <div class="section-label">Exercícios</div>
+  <div id="guideList"></div>
+
+  <div class="obs-card mt-8">
+    <div class="obs-title">💡 Dica Geral</div>
+    <div class="obs-text">Mantenha a respiração controlada para contração do abdômen. Isso melhora a execução e estabilidade da maioria dos movimentos.</div>
+  </div>
+</div>
+
+<div class="page" id="page-perfil">
+  <div class="profile-hero">
+    <div class="profile-avatar">JF</div>
+    <div class="profile-name">Júlia Fernandes</div>
+    <div class="profile-age">28 anos · 69 kg</div>
+    <div class="profile-tags">
+      <span class="profile-tag">💪 Força</span>
+      <span class="profile-tag">📈 Hipertrofia</span>
+      <span class="profile-tag">✨ Bem-estar</span>
+    </div>
+  </div>
+
+  <div class="section-label">Medidas Iniciais</div>
+  <div class="stats-grid mb-20">
+    <div class="stat-card">
+      <div class="stat-val">74cm</div>
+      <div class="stat-label">Cintura</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">107cm</div>
+      <div class="stat-label">Quadril</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">55cm</div>
+      <div class="stat-label">Coxa</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">32cm</div>
+      <div class="stat-label">Bíceps</div>
+    </div>
+  </div>
+
+  <div class="section-label">Observações</div>
+  <div class="obs-card">
+    <div class="obs-title">⚠️ Condropatia</div>
+    <div class="obs-text">Atenção aos exercícios de joelho. Evite hiper extensão na cadeira extensora e no leg press. Prefira amplitudes confortáveis e cargas progressivas.</div>
+  </div>
+  <div class="obs-card">
+    <div class="obs-title">🗓️ Rotina puxada</div>
+    <div class="obs-text">20 semanas de progressão planejada. Priorize qualidade de execução sobre carga. Cardio pode ser adaptado para o tempo disponível.</div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="section-label">Avaliação Semanal</div>
+
+  <div class="aval-week-selector">
+    <div class="aval-week-row">
+      <button class="week-btn" onclick="changeAvalWeek(-1)">‹</button>
+      <div class="aval-week-label" id="avalWeekLabel">Semana 1</div>
+      <button class="week-btn" onclick="changeAvalWeek(1)">›</button>
+    </div>
+    <div class="aval-saved-at" id="avalSavedAt"></div>
+  </div>
+
+  <div class="aval-fields">
+    <div class="aval-grid">
+      <div class="aval-field">
+        <div class="aval-field-label">📅 Frequência</div>
+        <div class="aval-options" id="aval-freq">
+          <button class="aval-opt" data-field="freq" data-val="1x" onclick="selectAval(this)">1x</button>
+          <button class="aval-opt" data-field="freq" data-val="2x" onclick="selectAval(this)">2x</button>
+          <button class="aval-opt" data-field="freq" data-val="3x" onclick="selectAval(this)">3x</button>
+          <button class="aval-opt" data-field="freq" data-val="4x" onclick="selectAval(this)">4x</button>
+          <button class="aval-opt" data-field="freq" data-val="5x" onclick="selectAval(this)">5x</button>
+        </div>
+      </div>
+      <div class="aval-field">
+        <div class="aval-field-label">😊 Humor</div>
+        <div class="aval-options" id="aval-humor">
+          <button class="aval-opt" data-field="humor" data-val="Ótimo" onclick="selectAval(this)">😁 Ótimo</button>
+          <button class="aval-opt" data-field="humor" data-val="Bom" onclick="selectAval(this)">🙂 Bom</button>
+          <button class="aval-opt" data-field="humor" data-val="Regular" onclick="selectAval(this)">😐 Regular</button>
+          <button class="aval-opt" data-field="humor" data-val="Difícil" onclick="selectAval(this)">😔 Difícil</button>
+        </div>
+      </div>
+      <div class="aval-field">
+        <div class="aval-field-label">⚡ Energia</div>
+        <div class="aval-options" id="aval-energia">
+          <button class="aval-opt" data-field="energia" data-val="Alta" onclick="selectAval(this)">⚡ Alta</button>
+          <button class="aval-opt" data-field="energia" data-val="Média" onclick="selectAval(this)">🔋 Média</button>
+          <button class="aval-opt" data-field="energia" data-val="Baixa" onclick="selectAval(this)">😴 Baixa</button>
+        </div>
+      </div>
+      <div class="aval-field">
+        <div class="aval-field-label">🏋️ Dificuldade</div>
+        <div class="aval-options" id="aval-dific">
+          <button class="aval-opt" data-field="dific" data-val="Fácil" onclick="selectAval(this)">Fácil</button>
+          <button class="aval-opt" data-field="dific" data-val="Moderada" onclick="selectAval(this)">Moderada</button>
+          <button class="aval-opt" data-field="dific" data-val="Difícil" onclick="selectAval(this)">Difícil</button>
+          <button class="aval-opt" data-field="dific" data-val="Muito difícil" onclick="selectAval(this)">Muito difícil</button>
+        </div>
+      </div>
+      <div class="aval-field">
+        <div class="aval-field-label">🩹 Dor / Desconforto</div>
+        <div class="aval-options" id="aval-dor">
+          <button class="aval-opt" data-field="dor" data-val="Nenhum" onclick="selectAval(this)">Nenhum</button>
+          <button class="aval-opt" data-field="dor" data-val="Leve" onclick="selectAval(this)">Leve</button>
+          <button class="aval-opt" data-field="dor" data-val="Moderado" onclick="selectAval(this)">Moderado</button>
+          <button class="aval-opt" data-field="dor" data-val="Forte" onclick="selectAval(this)">Forte</button>
+        </div>
+      </div>
+      <div class="aval-field">
+        <div class="aval-field-label">🌙 Sono</div>
+        <div class="aval-options" id="aval-sono">
+          <button class="aval-opt" data-field="sono" data-val="Ótimo" onclick="selectAval(this)">😴 Ótimo</button>
+          <button class="aval-opt" data-field="sono" data-val="Bom" onclick="selectAval(this)">💤 Bom</button>
+          <button class="aval-opt" data-field="sono" data-val="Regular" onclick="selectAval(this)">😓 Regular</button>
+          <button class="aval-opt" data-field="sono" data-val="Ruim" onclick="selectAval(this)">😵 Ruim</button>
+        </div>
+      </div>
+      <div class="aval-field aval-full">
+        <div class="aval-field-label">🥗 Alimentação</div>
+        <div class="aval-options" id="aval-alim">
+          <button class="aval-opt" data-field="alim" data-val="Ótima" onclick="selectAval(this)">🥗 Ótima</button>
+          <button class="aval-opt" data-field="alim" data-val="Boa" onclick="selectAval(this)">🍽️ Boa</button>
+          <button class="aval-opt" data-field="alim" data-val="Regular" onclick="selectAval(this)">⚡ Regular</button>
+          <button class="aval-opt" data-field="alim" data-val="Ruim" onclick="selectAval(this)">🍕 Ruim</button>
+        </div>
+      </div>
+      <div class="aval-field aval-full">
+        <div class="aval-field-label">📝 Observações</div>
+        <textarea class="aval-obs" id="aval-obs" placeholder="Anotações livres sobre a semana..." onchange="autoSaveAval()"></textarea>
+      </div>
+    </div>
+    <button class="save-btn" style="margin-top:4px" onclick="saveAvalWeek()">✓ Salvar avaliação</button>
+  </div>
+</div>
+
+<div class="page" id="page-historico">
+  <div class="section-label">Acompanhamento Semanal</div>
+  <div id="historyList"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-item active" onclick="showPage('treino', this)">
+    <span class="nav-icon">🏋️</span>Treino
+  </button>
+  <button class="nav-item" onclick="showPage('guia', this)">
+    <span class="nav-icon">📋</span>Guia
+  </button>
+  <button class="nav-item" onclick="showPage('perfil', this)">
+    <span class="nav-icon">👤</span>Perfil
+  </button>
+  <button class="nav-item" onclick="showPage('historico', this)">
+    <span class="nav-icon">📊</span>Histórico
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── STATE ──
+let currentWeek = 1;
+let currentTab = 'A';
+let guideFilter = 'all';
+const MAX_WEEKS = 20;
+
+// Storage helpers
+function saveData(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) {} }
+function loadData(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch(e) { return def; } }
+
+// ── TRAINING DATA ──
+const trainings = {
+  A: {
+    name: 'Quadríceps · Adutores · Panturrilha',
+    color: '#F5D98B',
+    exercises: [
+      { id:'mob_a', name:'Mobilidade Tornozelo e Joelho', series:'2 séries', reps: '', rest:'45s', rpe:'Leve', obj:'Fortalecimento dos joelhos', how:'Movimentos circulares e mobilidade ativa de tornozelo e joelho.', focus:'Articulações', error:'Forçar além do limite', tip:'Faça devagar e sinta a amplitude.', icon:'🔄', hasLoad: false },
+      { id:'add', name:'Cadeira Adutora', series:'3x12', reps:'12', rest:'1min', rpe:'7', obj:'Ativação de adutores', how:'Segura na força 2 segundos, solta controlado. Peso moderado para sentir bem o músculo.', focus:'Adutores da coxa (parte de dentro)', error:'Impulsionar demais ou bater os pesos', tip:'Aperte por 2 segundos na contração do músculo.', icon:'🦵', hasLoad: true },
+      { id:'sumo', name:'Agachamento Sumo', series:'3x12', reps:'12', rest:'1min', rpe:'7', obj:'Glúteo e quadríceps', how:'Ideal com halter e step. Afaste bem os pés com pontas para fora. Sente o quadril para trás durante a descida.', focus:'Glúteos, adutores, posteriores de coxa', error:'Deixar joelho fechar ou perder postura da coluna', tip:'Abra os joelhos acompanhando a linha dos pés. Coluna inclinada e peito aberto.', icon:'🏋️', hasLoad: true },
+      { id:'ext', name:'Cadeira Extensora', series:'4x10', reps:'10', rest:'1min', rpe:'6', obj:'Isolamento de quadríceps', how:'Pés levemente virados para fora. Não estender totalmente os joelhos. Segura na força e desce controlado.', focus:'Quadríceps', error:'Travar os joelhos, movimento em gangorra', tip:'Suba contando 2 e desça contando 3.', icon:'🦵', hasLoad: true },
+      { id:'leg', name:'Leg Press 45', series:'4x10', reps:'10', rest:'1min', rpe:'6', obj:'Força quadríceps e glúteo', how:'Pernas na linha do ombro. Pés levemente inclinados para fora. Movimento de empurro.', focus:'Quadríceps e glúteo', error:'Tirar o quadril do banco ou joelhos superextendidos', tip:'Pés firmes e lombar apoiada no banco.', icon:'💪', hasLoad: true },
+      { id:'pant', name:'Panturrilha', series:'3x15', reps:'15', rest:'45s', rpe:'8', obj:'Fortalecimento de panturrilha', how:'Suba o máximo possível. Segure 2 segundos e desça até alongar a panturrilha para baixo também. Movimento de tornozelo completo.', focus:'Panturrilhas', error:'Fazer movimento rápido ou com pouca amplitude', tip:'O que fortifica a panturrilha é a isometria e amplitude do movimento.', icon:'🦶', hasLoad: true },
+    ],
+    cardio: { type: 'bike', desc: '20 minutos · 1 min tiro + 2 min mais lento', icon: '🚴' }
+  },
+  B: {
+    name: 'Costas · Bíceps',
+    color: '#F2BDCC',
+    exercises: [
+      { id:'mob_b', name:'Mobilidade Geral', series:'2 séries', reps:'', rest:'45s', rpe:'Leve', obj:'Preparar articulações', how:'Mobilidade de ombros, coluna e quadril.', focus:'Articulações', error:'Pressa para começar', tip:'Leve e progressivo.', icon:'🔄', hasLoad: false },
+      { id:'pux', name:'Puxada Alta na Máquina', series:'4x10', reps:'10', rest:'1min', rpe:'8', obj:'Desenvolvimento das costas', how:'Puxe a barra em direção à parte superior do peito. Mantenha o peito aberto e os cotovelos para baixo voltados para fora.', focus:'Latíssimo do dorso', error:'Puxar atrás da cabeça, balançar o corpo', tip:'Pense em aproximar os cotovelos do quadril esmagando as costas.', icon:'🏋️', hasLoad: true },
+      { id:'rem', name:'Remada com Triângulo', series:'4x10', reps:'10', rest:'1min', rpe:'8', obj:'Espessura das costas', how:'Puxe o triângulo em direção ao abdômen retraindo as escápulas.', focus:'Costas médias e dorsais', error:'Curvar muito a lombar ou usar impulso', tip:'Inicie o movimento fechando as escápulas antes de puxar os braços para trás.', icon:'🔁', hasLoad: true },
+      { id:'face', name:'Facepull na Polia', series:'3x10', reps:'10', rest:'1min', rpe:'7', obj:'Estabilidade dos ombros', how:'Puxe a corda em direção ao rosto com cotovelos altos.', focus:'Deltoide superior e manguito rotador', error:'Abaixar os cotovelos da altura do ombro', tip:'Finalize com rotação externa dos ombros.', icon:'💪', hasLoad: true },
+      { id:'mart', name:'Bíceps Martelo', series:'3x10', reps:'10', rest:'1min', rpe:'7', obj:'Desenvolvimento braquial', how:'Flexione os cotovelos com pegada neutra mantendo os braços próximos ao corpo.', focus:'Braquial e braquiorradial', error:'Balançar o tronco e subir a carga por impulso', tip:'Movimento mais controlado.', icon:'💪', hasLoad: true },
+      { id:'rosca', name:'Rosca Direta c/ Barra', series:'3x10', reps:'10', rest:'1min', rpe:'8', obj:'Fortalecimento de bíceps', how:'Braços bem rente ao corpo. Peito estufado. Cotovelos fixos. Movimento moderado.', focus:'Bíceps', error:'Balançar o tronco ou projetar o cotovelo para frente', tip:'Suba controlado e desça lentamente.', icon:'🦾', hasLoad: true },
+    ],
+    cardio: { type: 'escada', desc: '20 minutos · 1 min tiro + 2 min mais lento', icon: '🪜' }
+  },
+  C: {
+    name: 'Posterior de Coxa · Glúteos',
+    color: '#D4E4F7',
+    exercises: [
+      { id:'mob_c', name:'Mobilidade', series:'2 séries', reps:'', rest:'45s', rpe:'Leve', obj:'Preparar articulações', how:'Mobilidade de quadril, joelho e tornozelo.', focus:'Articulações', error:'Pressa', tip:'Leve e progressivo.', icon:'🔄', hasLoad: false },
+      { id:'pelv', name:'Elevação Pélvica', series:'3x10', reps:'10', rest:'1min30s', rpe:'8', obj:'Glúteo e posterior de coxa', how:'Cinto um palmo abaixo da cintura. Contraia o glúteo no topo. Sobe empurrando para cima. Expira quando sobe, inspira quando desce.', focus:'Glúteo máximo', error:'Hiperestender a lombar em vez de contrair os glúteos', tip:'Empurre o chão com os calcanhares.', icon:'🍑', hasLoad: true },
+      { id:'mesa', name:'Mesa Flexora', series:'3x10', reps:'10', rest:'1min', rpe:'7', obj:'Isquiotibiais', how:'Flexione os joelhos aproximando os calcanhares dos glúteos e retorne lentamente, mantendo o quadril estável.', focus:'Posterior de coxa', error:'Tirar o quadril do banco ou usar impulso', tip:'Controle a volta e mantenha abdômen ativo.', icon:'🦵', hasLoad: true },
+      { id:'cflex', name:'Cadeira Flexora', series:'3x10', reps:'10', rest:'1min', rpe:'8', obj:'Posteriores de coxa', how:'Peso moderado. A perna tem que estar bem presa entre o peso e a almofada. Pés sempre virados para cima (pé de palhaço).', focus:'Posteriores', error:'Levantar o quadril ou excesso de carga', tip:'Movimento contínuo e controlado.', icon:'🦵', hasLoad: true },
+      { id:'coic', name:'Coicinho na Polia', series:'3x10', reps:'10', rest:'1min', rpe:'8', obj:'Glúteo máximo', how:'Polia na altura do joelho. Movimento de abaixar a perna. Coluna neutra. Quadril levando a perna para trás sem movimentar a lombar. Retorne lentamente.', focus:'Glúteo máximo', error:'Arquear a lombar ou balançar o tronco', tip:'O movimento deve acontecer no quadril e não nas costas.', icon:'🍑', hasLoad: true },
+      { id:'abdt', name:'Cadeira Abdutora', series:'3x10', reps:'10', rest:'1min', rpe:'7', obj:'Glúteo médio', how:'Abra as pernas contando 2, fecha contando 3. Peso moderado. Segura 2 na contração máxima.', focus:'Glúteo médio e abdutores', error:'Inclinar o tronco ou deixar o peso sem controle na volta', tip:'Mantenha o tronco firme e foque em sentir a lateral do glúteo.', icon:'🏃', hasLoad: true },
+    ],
+    cardio: { type: 'bike', desc: '20 minutos · 1 min tiro + 2 min mais lento', icon: '🚴' }
+  },
+  D: {
+    name: 'Peito · Ombros · Tríceps',
+    color: '#D8F0E8',
+    exercises: [
+      { id:'flex', name:'Flexão de Braço', series:'3x5', reps:'5', rest:'1min', rpe:'Moderado', obj:'Estabilidade, core e peitoral', how:'Corpo alinhado. Mãos na largura dos ombros e cotovelos levemente inclinados para trás.', focus:'Peitoral, tríceps e core', error:'Encolher ombros, deixar o quadril cair, abrir demais os cotovelos', tip:'Core ativo. Inspira para subir, expira para descer encaixando o abdômen. Contrair glúteo.', icon:'🤸', hasLoad: false, repsInput: true },
+      { id:'seqom', name:'Sequência de Ombro', series:'3x8 cada', reps:'8', rest:'2min/série', rpe:'7', obj:'Deltoides completos', how:'Três movimentos: elevação frontal, elevação lateral e voador invertido. Mantenha controle em todo o movimento.', focus:'Deltoides', error:'Elevar os ombros ou usar balanço corporal', tip:'Prefira menos carga e mais controle.', icon:'🔵', hasLoad: true },
+      { id:'seqtri', name:'Sequência de Tríceps', series:'3x10 cada', reps:'10', rest:'2min/série', rpe:'7', obj:'Fortalecimento do tríceps', how:'Três variações de extensão de tríceps. Cotovelos fixos durante todo o movimento.', focus:'Tríceps', error:'Abrir os cotovelos, usar impulso', tip:'Controle principalmente o retorno do movimento.', icon:'💪', hasLoad: true },
+    ],
+    cardio: { type: 'escada', desc: '20 minutos · 1 min tiro + 2 min mais lento', icon: '🪜' }
+  }
+};
+
+// ── PROGRESSION ──
+// Base loads from spreadsheet, with weekly progression
+const baseLoads = {
+  add: 6, sumo: 16, ext: 6, leg: 120, pant: 120,
+  pux: 20, rem: 29, face: 16, mart: 7, rosca: 15,
+  pelv: 80, mesa: 25, cflex: 0, coic: 0, abdt: 0,
+  flex: 0, seqom: 3, seqtri: 3
+};
+// Suggested progression per week (light progression every 2-3 weeks)
+function suggestedLoad(exId, week) {
+  const base = baseLoads[exId];
+  if (!base) return null;
+  if (exId === 'flex') return null;
+  // Small increments based on week
+  const increments = {
+    add: [0,0,3,3,3,6,6,6,9,9,9,12,12,12,15,15,18,18,18,21],
+    sumo: [0,0,0,2,2,4,4,4,6,6,6,8,8,8,10,10,12,12,12,14],
+    ext: [0,0,2,2,2,4,4,4,6,6,6,8,8,8,10,10,12,12,12,14],
+    leg: [0,0,20,20,20,40,40,40,60,60,60,80,80,80,100,100,120,120,120,140],
+    pant: [0,0,0,-40,0,0,0,0,0,0,0,0,0,5,5,5,10,10,10,10],
+    pux: [0,0,2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18],
+    rem: [0,0,2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18],
+    face: [0,0,2,2,2,4,4,4,6,6,6,8,8,8,10,10,12,12,12,14],
+    mart: [0,0,0,1,1,2,2,2,3,3,3,4,4,4,5,5,6,6,6,7],
+    rosca: [0,0,0,2,2,2,4,4,4,6,6,6,8,8,8,10,10,10,12,12],
+    pelv: [0,0,0,5,5,10,10,10,15,15,15,20,20,20,25,25,30,30,30,35],
+    mesa: [0,0,2,2,4,4,6,6,8,8,10,10,12,12,14,14,16,16,18,18],
+    cflex: [20,20,22,22,25,25,28,28,30,30,32,32,35,35,38,38,40,40,42,42],
+    coic: [10,10,12,12,14,14,16,16,18,18,20,20,22,22,24,24,26,26,28,28],
+    abdt: [15,15,18,18,20,20,22,22,25,25,28,28,30,30,32,32,35,35,38,38],
+    seqom: [0,0,0,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5],
+    seqtri: [0,0,0,0,0,1,1,1,2,2,2,3,3,3,4,4,4,5,5,5],
+  };
+  const inc = increments[exId];
+  const idx = Math.min(week - 1, 19);
+  const add = inc ? (inc[idx] || 0) : 0;
+  return base + add;
+}
+
+// ── RENDER ──
+function renderTrain() {
+  const t = trainings[currentTab];
+  let html = `<div class="section-label">${t.name}</div>`;
+
+  t.exercises.forEach(ex => {
+    const savedLoad = loadData(`load_${ex.id}_w${currentWeek}`, '');
+    const prevLoad = loadData(`load_${ex.id}_w${currentWeek - 1}`, '');
+    const isDone = loadData(`done_${ex.id}_w${currentWeek}`, false);
+    const suggested = suggestedLoad(ex.id, currentWeek);
+
+    const rpeNum = parseInt(ex.rpe);
+    let pips = '';
+    if (!isNaN(rpeNum)) {
+      for (let i = 6; i <= 9; i++) {
+        const lit = i <= rpeNum;
+        const high = i >= 9 && lit;
+        pips += `<div class="intensity-pip${lit ? ' lit' : ''}${high ? ' high' : ''}"></div>`;
+      }
+    }
+
+    html += `
+    <div class="exercise-card" id="card_${ex.id}">
+      <div class="ex-header" onclick="toggleEx('${ex.id}')">
+        <div class="ex-check${isDone ? ' done' : ''}" onclick="toggleDone(event, '${ex.id}')" id="chk_${ex.id}">
+          ${isDone ? '✓' : ''}
+        </div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.icon} ${ex.name}</div>
+          <div class="ex-meta">${ex.series}${ex.reps ? ' · ' + ex.reps + ' reps' : ''} · ${ex.rest}</div>
+          ${pips ? `<div class="intensity-row">${pips}</div>` : ''}
+        </div>
+        ${!isNaN(rpeNum) ? `<div class="ex-rpe">RPE ${ex.rpe}</div>` : ''}
+        <div class="ex-expand-icon" id="icon_${ex.id}">▾</div>
+      </div>
+      <div class="ex-details" id="det_${ex.id}">
+        <div class="ex-details-row">
+          <div class="detail-chip" style="flex:1">
+            <div class="detail-chip-label">Objetivo</div>
+            <div class="detail-chip-val" style="font-size:12px;font-weight:500">${ex.obj}</div>
+          </div>
+        </div>
+        ${ex.hasLoad ? `
+        <div class="load-section">
+          <div class="load-label">Carga utilizada (kg)</div>
+          <div class="load-row">
+            <input type="number" inputmode="decimal" class="load-input" 
+              id="inp_${ex.id}" placeholder="${suggested !== null ? suggested : '–'}" 
+              value="${savedLoad}"
+              onchange="saveLoad('${ex.id}', this.value)">
+            <div class="load-unit">kg</div>
+          </div>
+          <div class="prev-load">
+            ${prevLoad ? `Semana anterior: <span>${prevLoad} kg</span>` : 
+              suggested !== null ? `Sugerido: <span>${suggested} kg</span>` : ''}
+          </div>
+        </div>` : ex.repsInput ? `
+        <div class="load-section">
+          <div class="load-label">Repetições realizadas</div>
+          <div class="load-row">
+            <input type="number" inputmode="numeric" class="load-input"
+              id="inp_${ex.id}" placeholder="5"
+              value="${savedLoad}"
+              onchange="saveLoad('${ex.id}', this.value)">
+            <div class="load-unit">reps</div>
+          </div>
+        </div>` : ''}
+      </div>
+    </div>`;
+  });
+
+  const cardio = t.cardio;
+  html += `
+  <div class="cardio-card">
+    <div class="cardio-icon">${cardio.icon}</div>
+    <div>
+      <div class="cardio-title">Cardio · ${cardio.type === 'bike' ? 'Bike' : 'Escada'}</div>
+      <div class="cardio-desc">${cardio.desc}</div>
+    </div>
+  </div>
+  <button class="save-btn" onclick="saveSession()">✓ Salvar treino desta semana</button>`;
+
+  document.getElementById('trainContent').innerHTML = html;
+}
+
+function toggleEx(id) {
+  const det = document.getElementById('det_' + id);
+  const icon = document.getElementById('icon_' + id);
+  det.classList.toggle('open');
+  icon.classList.toggle('open');
+}
+
+function toggleDone(e, id) {
+  e.stopPropagation();
+  const key = `done_${id}_w${currentWeek}`;
+  const current = loadData(key, false);
+  saveData(key, !current);
+  const el = document.getElementById('chk_' + id);
+  if (!current) {
+    el.classList.add('done'); el.innerText = '✓';
+  } else {
+    el.classList.remove('done'); el.innerText = '';
+  }
+}
+
+function saveLoad(id, val) {
+  saveData(`load_${id}_w${currentWeek}`, val);
+}
+
+function saveSession() {
+  saveData(`session_${currentTab}_w${currentWeek}`, { saved: true, date: new Date().toLocaleDateString('pt-BR') });
+  showToast('Treino salvo! 💪');
+}
+
+// ── WEEK ──
+function changeWeek(d) {
+  currentWeek = Math.max(1, Math.min(MAX_WEEKS, currentWeek + d));
+  updateWeekUI();
+  renderTrain();
+}
+
+const phases = [
+  [1,4,'Fase de base'],
+  [5,8,'Construção'],
+  [9,12,'Intensidade'],
+  [13,16,'Pico'],
+  [17,20,'Consolidação']
+];
+
+function updateWeekUI() {
+  const pct = Math.round((currentWeek / MAX_WEEKS) * 100);
+  document.getElementById('weekLabel').innerText = `Semana ${currentWeek}`;
+  document.getElementById('weekBadge').innerText = `Semana ${currentWeek}`;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').innerText = `${pct}% do programa`;
+  const phase = phases.find(p => currentWeek >= p[0] && currentWeek <= p[1]);
+  document.getElementById('weekSub').innerText = `${phase ? phase[2] : ''} · Semana ${currentWeek} de ${MAX_WEEKS}`;
+}
+
+// ── TABS ──
+function selectTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.train-tab').forEach((el, i) => {
+    el.classList.toggle('active', ['A','B','C','D'][i] === tab);
+  });
+  renderTrain();
+}
+
+// ── PAGES ──
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'historico') renderHistory();
+  if (name === 'guia') renderGuide();
+  if (name === 'perfil') loadAvalWeek();
+}
+
+// ── GUIDE ──
+const allGuideExs = Object.entries(trainings).flatMap(([t, tr]) =>
+  tr.exercises.filter(e => e.hasLoad || e.repsInput).map(e => ({ ...e, train: t }))
+);
+
+function filterGuide(f, el) {
+  guideFilter = f;
+  document.querySelectorAll('.gf-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderGuide();
+}
+
+function renderGuide() {
+  const colors = { A: '#F5D98B', B: '#F2BDCC', C: '#D4E4F7', D: '#D8F0E8' };
+  const filtered = guideFilter === 'all' ? allGuideExs : allGuideExs.filter(e => e.train === guideFilter);
+  let html = '';
+  filtered.forEach(ex => {
+    html += `
+    <div class="guide-card" data-train="${ex.train}">
+      <div class="guide-header" onclick="toggleGuide('g_${ex.id}')">
+        <div class="guide-icon" style="background:${colors[ex.train]}20">${ex.icon}</div>
+        <div>
+          <div class="guide-name">${ex.name}</div>
+          <div class="guide-target">Treino ${ex.train} · ${ex.focus}</div>
+        </div>
+        <div class="ex-expand-icon" id="gi_${ex.id}">▾</div>
+      </div>
+      <div class="guide-body" id="g_${ex.id}">
+        <div class="guide-row">
+          <div class="guide-row-label">Como fazer</div>
+          <div class="guide-row-text">${ex.how}</div>
+        </div>
+        <div class="divider"></div>
+        <div class="guide-row">
+          <div class="guide-row-label">Erro comum</div>
+          <div class="guide-row-text error">⚠️ ${ex.error}</div>
+        </div>
+        <div class="guide-row" style="margin-top:10px">
+          <div class="guide-row-label">Dica prática</div>
+          <div class="guide-row-text tip">✅ ${ex.tip}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('guideList').innerHTML = html;
+}
+
+function toggleGuide(id) {
+  const b = document.getElementById(id);
+  const icon = document.getElementById('gi_' + id.replace('g_', ''));
+  b.classList.toggle('open');
+  if (icon) icon.classList.toggle('open');
+}
+
+// ── HISTORY ──
+function renderHistory() {
+  let html = '';
+  for (let w = 1; w <= MAX_WEEKS; w++) {
+    const saved = loadData(`weekly_eval_w${w}`, null);
+    const dotHtml = ['A','B','C','D'].map(t => {
+      const s = loadData(`session_${t}_w${w}`, null);
+      return `<div class="hwc-dot${s ? ' done' : ''}"></div>`;
+    }).join('');
+
+    html += `
+    <div class="history-week-card">
+      <div class="hwc-header" onclick="toggleHistWeek(${w})">
+        <div>
+          <div class="hwc-week">Semana ${w}</div>
+          <div class="hwc-date">${saved && saved.savedAt ? saved.savedAt : 'Não registrada'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="hwc-dots">${dotHtml}</div>
+          <div class="ex-expand-icon" id="hwi_${w}">▾</div>
+        </div>
+      </div>
+      <div class="hwc-body" id="hwb_${w}">
+        <div class="week-form-grid">
+          <div class="wf-item">
+            <div class="wf-label">Frequência</div>
+            <select class="wf-select" id="freq_${w}" onchange="saveWeekEval(${w})">
+              <option value="">–</option>
+              <option value="1">1x</option><option value="2">2x</option>
+              <option value="3">3x</option><option value="4">4x</option><option value="5">5x</option>
+            </select>
+          </div>
+          <div class="wf-item">
+            <div class="wf-label">Humor</div>
+            <select class="wf-select" id="humor_${w}" onchange="saveWeekEval(${w})">
+              <option value="">–</option>
+              <option>😊 Ótimo</option><option>🙂 Bom</option>
+              <option>😐 Regular</option><option>😔 Difícil</option>
+            </select>
+          </div>
+          <div class="wf-item">
+            <div class="wf-label">Energia</div>
+            <select class="wf-select" id="energia_${w}" onchange="saveWeekEval(${w})">
+              <option value="">–</option>
+              <option>⚡ Alta</option><option>🔋 Média</option><option>😴 Baixa</option>
+            </select>
+          </div>
+          <div class="wf-item">
+            <div class="wf-label">Dificuldade</div>
+            <select class="wf-select" id="dific_${w}" onchange="saveWeekEval(${w})">
+              <option value="">–</option>
+              <option>Fácil</option><option>Moderada</option><option>Difícil</option><option>Muito difícil</option>
+            </select>
+          </div>
+          <div class="wf-item">
+            <div class="wf-label">Dor/Desconforto</div>
+            <select class="wf-select" id="dor_${w}" onchange="saveWeekEval(${w})">
+              <option value="">–</option>
+              <option>Nenhum</option><option>Leve</option><option>Moderado</option><option>Forte</option>
+            </select>
+          </div>
+          <div class="wf-item">
+            <div class="wf-label">Sono</div>
+            <select class="wf-select" id="sono_${w}" onchange="saveWeekEval(${w})">
+              <option value="">–</option>
+              <option>😴 Ótimo</option><option>💤 Bom</option><option>😓 Regular</option><option>😵 Ruim</option>
+            </select>
+          </div>
+          <div class="wf-item">
+            <div class="wf-label">Alimentação</div>
+            <select class="wf-select" id="alim_${w}" onchange="saveWeekEval(${w})">
+              <option value="">–</option>
+              <option>🥗 Ótima</option><option>🍽️ Boa</option><option>⚡ Regular</option><option>🍕 Ruim</option>
+            </select>
+          </div>
+          <div class="wf-notes">
+            <div class="wf-label">Observações</div>
+            <textarea class="wf-input-text" placeholder="Anotações livres..." id="obs_${w}" onchange="saveWeekEval(${w})"></textarea>
+          </div>
+        </div>
+        <button class="save-week-btn" onclick="saveWeekEval(${w}); showToast('Semana ${w} salva! ✓')">Salvar semana ${w}</button>
+      </div>
+    </div>`;
+  }
+  document.getElementById('historyList').innerHTML = html;
+  // Restore values
+  for (let w = 1; w <= MAX_WEEKS; w++) {
+    const data = loadData(`weekly_eval_w${w}`, null);
+    if (data) {
+      ['freq','humor','energia','dific','dor','sono','alim'].forEach(k => {
+        const el = document.getElementById(`${k}_${w}`);
+        if (el && data[k]) el.value = data[k];
+      });
+      const obs = document.getElementById(`obs_${w}`);
+      if (obs && data.obs) obs.value = data.obs;
+    }
+  }
+}
+
+function toggleHistWeek(w) {
+  const b = document.getElementById('hwb_' + w);
+  const i = document.getElementById('hwi_' + w);
+  b.classList.toggle('open');
+  i.classList.toggle('open');
+}
+
+function saveWeekEval(w) {
+  const get = id => { const e = document.getElementById(`${id}_${w}`); return e ? e.value : ''; };
+  saveData(`weekly_eval_w${w}`, {
+    freq: get('freq'), humor: get('humor'), energia: get('energia'),
+    dific: get('dific'), dor: get('dor'), sono: get('sono'), alim: get('alim'),
+    obs: (() => { const e = document.getElementById(`obs_${w}`); return e ? e.value : ''; })(),
+    savedAt: new Date().toLocaleDateString('pt-BR')
+  });
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── AVALIAÇÃO (Perfil) ──
+let avalWeek = 1;
+
+function changeAvalWeek(d) {
+  avalWeek = Math.max(1, Math.min(MAX_WEEKS, avalWeek + d));
+  document.getElementById('avalWeekLabel').innerText = `Semana ${avalWeek}`;
+  loadAvalWeek();
+}
+
+function loadAvalWeek() {
+  const data = loadData(`weekly_eval_w${avalWeek}`, {});
+  const fields = ['freq','humor','energia','dific','dor','sono','alim'];
+  fields.forEach(f => {
+    const container = document.getElementById(`aval-${f}`);
+    if (!container) return;
+    container.querySelectorAll('.aval-opt').forEach(btn => {
+      btn.classList.toggle('selected', btn.dataset.val === (data[f] || ''));
+    });
+  });
+  const obs = document.getElementById('aval-obs');
+  if (obs) obs.value = data.obs || '';
+  const savedAt = document.getElementById('avalSavedAt');
+  if (savedAt) savedAt.innerText = data.savedAt ? `Salvo em ${data.savedAt}` : 'Não registrada ainda';
+}
+
+function selectAval(btn) {
+  const field = btn.dataset.field;
+  const container = document.getElementById(`aval-${field}`);
+  container.querySelectorAll('.aval-opt').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  autoSaveAval();
+}
+
+function autoSaveAval() {
+  // no-op, save only on button press
+}
+
+function saveAvalWeek() {
+  const fields = ['freq','humor','energia','dific','dor','sono','alim'];
+  const data = { savedAt: new Date().toLocaleDateString('pt-BR') };
+  fields.forEach(f => {
+    const sel = document.querySelector(`#aval-${f} .aval-opt.selected`);
+    data[f] = sel ? sel.dataset.val : '';
+  });
+  const obs = document.getElementById('aval-obs');
+  data.obs = obs ? obs.value : '';
+  saveData(`weekly_eval_w${avalWeek}`, data);
+  document.getElementById('avalSavedAt').innerText = `Salvo em ${data.savedAt}`;
+  showToast(`Semana ${avalWeek} salva! ✓`);
+}
+
+// ── INIT ──
+updateWeekUI();
+renderTrain();
+renderGuide();
+loadAvalWeek();
+</script>
+</body>
+</html>
